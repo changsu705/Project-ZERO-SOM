@@ -1,55 +1,137 @@
-//각속도 데이터
-
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.XR;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class Dotge : MonoBehaviour
 {
-    private InputDevice hmdDevice;
-    private Rigidbody rb;
-    public float DotgePower = 10f; 
+    [Header("Input Settings")]
+    [SerializeField]
+    private InputActionProperty leftTriggerAction; // 왼쪽 트리거 입력
+
+    [Header("Dodge Settings")]
+    public float forceAmount = 5f; // 추가할 힘의 크기
+    public float threshold = 0.5f; // 최소 각속도 값 (이 값 이상일 때 힘 추가)
+    public float dodgeCooldown = 1f; // 닷지 쿨타임 (초)
+    private bool canDodge = true; // 닷지 가능 여부
+
+    private UnityEngine.XR.InputDevice hmdDevice;
+    public Rigidbody rb;
+    private ContinuousMoveProviderBase locomotionSystem; // 로코모션 시스템
+    private float locomotionSpeed; // 로코모션 이동 속도
 
     void Start()
     {
+        // Rigidbody 가져오기
         rb = GetComponent<Rigidbody>();
         if (rb == null)
         {
-            Debug.LogError("리지드바디 검출 안됌.");
+            GameObject xrOrigin = GameObject.Find("XR Origin (XR Rig)");
+            if (xrOrigin != null)
+            {
+                rb = xrOrigin.GetComponent<Rigidbody>();
+            }
+            Debug.Log(xrOrigin);
             return;
         }
-        var devices = new List<InputDevice>();
-        // HMD 장치를 찾습니다. (컨트롤러나 다른 디바이스의 자이로 데이터를 원한다면 해당 특성으로 필터링 가능)
+
+        // HMD 장치 찾기
+        var devices = new List<UnityEngine.XR.InputDevice>();
         InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.HeadMounted, devices);
-        // GetDevicesWithCharacteristics 장치를 찾습니다.(InputDeviceCharacteristics.HeadMounted 인풋 디바이스 사용장치중에 해드 마운티드(헤드셋)을
+
         if (devices.Count > 0)
         {
             hmdDevice = devices[0];
+            if (!hmdDevice.isValid)
+            {
+                Debug.Log("헤드업 마운티드 찾을수 없음");
+            }
         }
+        else
+        {
+            Debug.Log("연결된 장치 찾을수 없음");
+        }
+
+        locomotionSystem = FindObjectOfType<ContinuousMoveProviderBase>();
+        if (locomotionSystem == null)
+        {
+            Debug.LogWarning("Continuous Move Provider가 씬에서 발견되지 않음. 로코모션 없이 작동할 수도 있음.");
+        }
+        Debug.Log("모든기능 테스트");
     }
 
     void Update()
     {
-        if (hmdDevice.isValid)
+        if(leftTriggerAction.action?.ReadValue<float>() > 0.8f)
         {
-            // 자이로스코프에 해당하는 회전 속도 데이터를 가져옵니다.
-            if (hmdDevice.TryGetFeatureValue(CommonUsages.deviceAngularVelocity, out Vector3 angularVelocity))
-            // hmdDevice.TryGetFeatureValue hmdDevice에서 값을 받아오는것을 시도합니다. CommonUsages.deviceAngularVelocity 장치의 각속도를 out Vector3 angularVelocity 그것을 여기에 저장합니다. 해당 TryGetFeatureValue 문은 true false를 반환하기때문에 성공 여부를 파악 할 수 있다.
-            {
-                Debug.Log("Angular Velocity: " + angularVelocity);
-                DotgeImpulse(angularVelocity);
-            }
+            Debug.Log("레프트 컨트롤러 트리거눌림");
         }
+            if (canDodge && leftTriggerAction.action?.ReadValue<float>() > 0.8f)
+            {
+            if (hmdDevice.TryGetFeatureValue(UnityEngine.XR.CommonUsages.deviceAngularVelocity, out Vector3 angularVelocity))
+            {
+                // 특정 값 이상일 때만 힘 추가
+                if (angularVelocity.magnitude > threshold)
+                {
+                    StartCoroutine(ApplyForce(angularVelocity));
+                    Debug.Log($"닷지 성공! 각속도 검출값 X: {angularVelocity.x}, Y: {angularVelocity.y}, Z: {angularVelocity.z}");
+                }
+            }
+            else
+            {
+                Debug.Log("해드셋 각속도값 받아올 수 없음.");
+            }
+            }
     }
-    void DotgeImpulse(Vector3 angularVelocity)
+
+    IEnumerator ApplyForce(Vector3 angularVelocity)
     {
-        if (rb == null) return;
+        canDodge = false;
+        if (rb == null) yield break;
 
-        Vector3 dotgeDirection = angularVelocity.normalized; // 방향 벡터 정규화
-        rb.AddForce(dotgeDirection * DotgePower, ForceMode.Impulse); // 순간적인 힘 추가
+        if (locomotionSystem != null)
+        {
+            locomotionSystem.enabled = false;
+            rb.isKinematic = false;
+        }
 
-        //현제는 정규환된후 그 방향으로 힘을 추가하는 코드밖에 안들어가 있음
-        //y축 방향을 제거한뒤 정규화 그리고 해당 값을 넘겼을때 일정한 백터를 추가해야함.
+        angularVelocity.y = 0;
+
+        // forceDirection 힘의 방향 각속도를 정규화하여 사용
+        Vector3 forceDirection = angularVelocity.normalized;
+
+        // Rigidbody에 힘 추가
+        rb.AddForce(forceDirection * forceAmount, ForceMode.Impulse);
+        Debug.Log($"닷지 성공! 닷지 방향 X: {forceDirection.x}, Y: {forceDirection.y}, Z: {forceDirection.z} \n닷지 힘 {forceAmount}");
+
+        locomotionSpeed = locomotionSystem.moveSpeed;
+        float elapsedTime = 0f;
+        while (elapsedTime < dodgeCooldown)
+        {
+            elapsedTime += Time.deltaTime;
+
+            // 만약 닷지 속도가 로코모션 속도보다 느려지면 즉시 로코모션 활성화
+            if (rb.velocity.magnitude <= locomotionSpeed)
+            {
+                if (locomotionSystem != null && !locomotionSystem.enabled)
+                {
+                    locomotionSystem.enabled = true;
+                    rb.isKinematic = true;
+                }
+                else
+                {
+                    locomotionSystem.enabled = true;
+                    rb.isKinematic = true;
+                    Debug.Log("로코모션오류발생 작동안함 비상 시퀸스로 로코모션으로 강제변경 .");
+                }
+                break; // 루프 탈출
+            }
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(dodgeCooldown);
+        canDodge = true; // 쿨타임 후 다시 닷지 가능
     }
-
 }
