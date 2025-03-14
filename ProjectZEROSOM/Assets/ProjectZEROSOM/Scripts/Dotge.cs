@@ -7,19 +7,20 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class Dotge : MonoBehaviour
 {
-    [Header("Input Settings")]
+    [Header("인풋 설정")]
     [SerializeField]
     private InputActionProperty leftTriggerAction; // 왼쪽 트리거 입력
     public Transform transformMainCamera;
 
-    [Header("Dodge Settings")]
+    [Header("닷지 설정")]
     public float dodgeSpeed = 5f; // 닷지 속도
     public float threshold = 0.5f; // 최소 각속도 값 (이 값 이상일 때 닷지)
     public float dodgeCooldown = 3f; // 닷지 쿨타임 (초)
-    private bool canDodge = true; // 닷지 가능 여부
     public float dodgeDuration = 0.5f; // 닷지 지속시간
     private float currentSpeed = 0f;
+    private bool canDodge = true; // 닷지 가능 여부
 
+    [Header("기타 설정")]
     private UnityEngine.XR.InputDevice hmdDevice;
     private ContinuousMoveProviderBase locomotionSystem; // 로코모션 시스템
     public CharacterController characterController;
@@ -104,7 +105,7 @@ public class Dotge : MonoBehaviour
                 break;
             }
         }
-
+        
         yield return new WaitForSeconds(dodgeCooldown);
         canDodge = true; // 쿨타임 후 다시 닷지 가능
     }
