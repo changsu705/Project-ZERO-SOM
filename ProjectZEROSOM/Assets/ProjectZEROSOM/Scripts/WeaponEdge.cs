@@ -20,7 +20,7 @@ public class WeaponEdge : MonoBehaviour
                 int damage = Mathf.RoundToInt(impactSpeed * damageMultiplier);
                 monster.TakeDamage(damage);
 
-                Debug.Log($"[DamageObject] {monster.monsterName}에게 {damage} 데미지를 입혔습니다! (속도: {impactSpeed})");
+                Debug.Log($"[DamageObject] {monster.UnitName}에게 {damage} 데미지를 입혔습니다! (속도: {impactSpeed})");
             }
         }
     }

@@ -181,9 +181,9 @@ MonoBehaviour:
       type: 3}
   transformMainCamera: {fileID: 789755587}
   dodgeSpeed: 5
-  threshold: 0.5
-  dodgeCooldown: 1
-  dodgeDuration: 1
+  threshold: 1
+  dodgeCooldown: 3
+  dodgeDuration: 0.5
   characterController: {fileID: 1886135906}
 --- !u!1 &114621881
 GameObject:
@@ -706,7 +706,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.75, y: 0.56, z: 6.83}
   m_LocalScale: {x: 1, y: 2, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
