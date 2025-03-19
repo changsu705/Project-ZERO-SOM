@@ -5,7 +5,7 @@ public class Undead : Monster
     public bool canRevive = true; // 부활 가능 여부
 
     // 언데드 몬스터는 죽을 때 일정 확률로 부활
-    protected override void Die()
+    public override void Die()
     {
         if (canRevive)
         {
