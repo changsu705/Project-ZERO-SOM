@@ -11,6 +11,7 @@ public class Paladin : Monster
     { "CastSlash", "CastSlashAnim" }
 };
     public string currentAnimTrigger;
+    public bool isAttacking = false;
 
 
 
@@ -19,11 +20,11 @@ public class Paladin : Monster
         switch (patternName)
         {
             case "Slash":
-                currentParryThreshold = 2f;
+                currentParryThreshold = 1f;
                 ParryStatus = "Block";
                 break;
             case "CastSlash":
-                currentParryThreshold = 5f;
+                currentParryThreshold = 2f;
                 ParryStatus = "Groggy";
                 break;
         }
@@ -33,7 +34,7 @@ public class Paladin : Monster
             currentAnimTrigger = animTrigger;
             if (animator != null)
             {
-                animator.SetTrigger(currentAnimTrigger); 
+                animator.SetTrigger(currentAnimTrigger);
             }
         }
     }
