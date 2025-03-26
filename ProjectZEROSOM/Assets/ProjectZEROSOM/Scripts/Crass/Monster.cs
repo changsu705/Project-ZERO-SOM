@@ -3,7 +3,9 @@ using UnityEngine;
 public class Monster : Unit
 {
     public HealthBar healthBar;
-
+    public float currentParryThreshold = 4f;
+    public string ParryStatus;
+    public Animator animator;
     void Start()
     {
         health = maxHealth;
@@ -26,10 +28,22 @@ public class Monster : Unit
             Debug.Log("체력 바 업데이트: " + health);
         }
     }
-    // 몬스터가 공격하는 메서드
     public void Attack()
     {
         Debug.Log(UnitName + "이(가) 공격합니다! 공격력: " + attackPower);
     }
-
+    public void Parried()
+    {
+        if (ParryStatus == "Groggy")
+        {
+            Debug.Log($"{UnitName} 패링 성공 → 그로기 진입!");
+            animator.SetTrigger("Groggy"); // 그로기 애니메이션 트리거
+        }
+        else if (ParryStatus == "Block")
+        {
+            Debug.Log($"{UnitName} 패링 성공 → 막힘 처리 (idle)");
+            animator.SetTrigger("Idle"); // idle 상태 복귀용 트리거
+        }
+    }
+   
 }

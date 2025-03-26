@@ -78,13 +78,13 @@ public class Dotge : MonoBehaviour
         canDodge = false;
         Vector3 LocalangularVelocity = transformMainCamera.TransformDirection(angularVelocity);
 
-        // angularVelocity y 축 삭제
-        LocalangularVelocity.y = 0;
         // forceDirection 힘의 방향 각속도를 정규화하여 사용
         Vector3 forceDirection = LocalangularVelocity.normalized;
         Debug.Log($"닷지 방향 X: {forceDirection.x}, Y: {forceDirection.y}, Z: {forceDirection.z}");
-        forceDirection = Quaternion.Euler(0, -90, 0) * forceDirection;
-
+        Vector3 mainCameraAngular = transformMainCamera.rotation.eulerAngles;
+        forceDirection = Quaternion.Euler(mainCameraAngular) * forceDirection;
+        // angularVelocity y 축 삭제
+        forceDirection.y = 0;
 
         float elapsedTime = 0f;
         while (elapsedTime < dodgeDuration)
@@ -99,13 +99,14 @@ public class Dotge : MonoBehaviour
             characterController.Move(moveDirection);
             yield return null;
 
+
             CollisionFlags flags = characterController.Move(moveDirection);
             if ((flags & CollisionFlags.Sides) != 0) // 벽에 충돌했는지 확인
             {
                 break;
             }
         }
-        
+
         yield return new WaitForSeconds(dodgeCooldown);
         canDodge = true; // 쿨타임 후 다시 닷지 가능
     }

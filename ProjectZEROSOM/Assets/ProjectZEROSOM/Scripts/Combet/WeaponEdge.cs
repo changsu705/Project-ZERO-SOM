@@ -7,15 +7,35 @@ public class WeaponEdge : MonoBehaviour
 
     public void HandleCollision(Collision collision)
     {
-        Monster monster = collision.gameObject.GetComponent<Monster>();
-        if (monster != null)
+        GameObject hitObject = collision.collider.gameObject;
+
+        if (hitObject.CompareTag("MonsterWeapon"))
+        {
+            Monster monsterWeapon = hitObject.GetComponentInParent<Monster>();
+            if (monsterWeapon != null)
+            {
+                float impactSpeed = collision.relativeVelocity.magnitude;
+
+                if (impactSpeed >= monsterWeapon.currentParryThreshold)
+                {
+                    monsterWeapon.Parried();
+                    return;
+                }
+                else
+                {
+                    Debug.Log($"패링실패 충돌값 {impactSpeed}입니다.");
+                }
+            }
+        }
+        Monster bodyMonster = collision.collider.GetComponentInParent<Monster>();
+        if (bodyMonster != null)
         {
             float impactSpeed = collision.relativeVelocity.magnitude;
             if (impactSpeed >= minDamageSpeed)
             {
                 int damage = Mathf.RoundToInt(impactSpeed * damageMultiplier);
-                monster.TakeDamage(damage);
-                Debug.Log($"[DamageObject] {monster.UnitName}에게 {damage} 데미지를 입혔습니다! (속도: {impactSpeed})");
+                bodyMonster.TakeDamage(damage);
+                Debug.Log($"[DamageObject] {bodyMonster.UnitName}에게 {damage} 데미지를 입혔습니다! (속도: {impactSpeed})");
             }
         }
     }
