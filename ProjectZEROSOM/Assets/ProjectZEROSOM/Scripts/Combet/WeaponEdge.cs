@@ -14,16 +14,10 @@ public class WeaponEdge : MonoBehaviour
             Monster monsterWeapon = hitObject.GetComponentInParent<Monster>();
             if (monsterWeapon != null)
             {
-                float impactSpeed = collision.relativeVelocity.magnitude;
-
-                if (impactSpeed >= monsterWeapon.currentParryThreshold)
+                if (monsterWeapon.isparred == true)
                 {
                     monsterWeapon.Parried();
                     return;
-                }
-                else
-                {
-                    Debug.Log($"패링실패 충돌값 {impactSpeed}입니다.");
                 }
             }
         }
