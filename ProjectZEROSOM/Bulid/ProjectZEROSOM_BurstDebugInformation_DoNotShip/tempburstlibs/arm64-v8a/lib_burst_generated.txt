@@ -12,7 +12,7 @@ Library: E:\Git\Project-ZERO-SOM\ProjectZEROSOM\Temp\BurstOutput\tempburstlibs\a
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=E:\Git\Project-ZERO-SOM\ProjectZEROSOM\Temp\Burst
 --debug=Full
---key-folder=E:/Editor/Unity 2022.3.42f1/Editor/Data/PlaybackEngines/AndroidPlayer
+--key-folder=C:/Program Files/Unity/Hub/Editor/2022.3.42f1/Editor/Data/PlaybackEngines/AndroidPlayer
 --decode-folder=E:\Git\Project-ZERO-SOM\ProjectZEROSOM\Library\Burst
 --output=E:\Git\Project-ZERO-SOM\ProjectZEROSOM\Temp\BurstOutput\tempburstlibs\arm64-v8a\lib_burst_generated
 --pdb-search-paths=Temp/ManagedSymbols/
@@ -30,7 +30,7 @@ Library: E:\Git\Project-ZERO-SOM\ProjectZEROSOM\Temp\BurstOutput\tempburstlibs\a
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=E:\Git\Project-ZERO-SOM\ProjectZEROSOM\Temp\Burst
 --debug=Full
---key-folder=E:/Editor/Unity 2022.3.42f1/Editor/Data/PlaybackEngines/AndroidPlayer
+--key-folder=C:/Program Files/Unity/Hub/Editor/2022.3.42f1/Editor/Data/PlaybackEngines/AndroidPlayer
 --decode-folder=E:\Git\Project-ZERO-SOM\ProjectZEROSOM\Library\Burst
 --output=E:\Git\Project-ZERO-SOM\ProjectZEROSOM\Temp\BurstOutput\tempburstlibs\arm64-v8a\lib_burst_generated
 --pdb-search-paths=Temp/ManagedSymbols/
